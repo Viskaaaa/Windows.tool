@@ -22,7 +22,7 @@ public static class LicenseService
     /// Replace before shipping, and use the SAME value in tools/LicenseGen when producing
     /// licenses.dat. Anything you generate with a different secret will not decrypt here.
     /// </summary>
-    private const string BuildSecret = "CHANGE-ME-BEFORE-SHIPPING-4f1c9a2b";
+    private const string BuildSecret = "PsHiRveTG2Bq4EXx6GiwJliYBTvlxgMbfj7xVxuu";
 
     private const string ResourceName = "RigBooster.licenses.dat";
     private const int SaltLen = 16, IvLen = 16, Iterations = 200_000;
