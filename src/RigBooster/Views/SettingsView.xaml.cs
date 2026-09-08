@@ -22,6 +22,7 @@ public partial class SettingsView : UserControl
             RedRadio.IsChecked = ThemeService.Theme == AppTheme.Red;
             ContrastRadio.IsChecked = ThemeService.Theme == AppTheme.HighContrast;
             ScaleSlider.Value = ThemeService.FontScale;
+            EffectsCheck.IsChecked = ThemeService.Effects;
             ScaleLabel.Text = $"Text size: {ThemeService.FontScale * 100:0}%";
             _ready = true;
         };
@@ -38,6 +39,12 @@ public partial class SettingsView : UserControl
         if (!_ready) return;
         ScaleLabel.Text = $"Text size: {e.NewValue * 100:0}%";
         ThemeService.Apply(ThemeService.Theme, e.NewValue);
+    }
+
+    private void Effects_Changed(object sender, RoutedEventArgs e)
+    {
+        if (!_ready) return;
+        ThemeService.SetEffects(EffectsCheck.IsChecked == true);
     }
 
     private void Deactivate_Click(object sender, RoutedEventArgs e)

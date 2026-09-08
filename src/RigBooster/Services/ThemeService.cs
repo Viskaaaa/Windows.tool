@@ -25,7 +25,13 @@ public static class ThemeService
     public static AppTheme Theme { get; private set; } = AppTheme.Red;
     public static double FontScale { get; private set; } = 1.0;
 
-    private sealed record Prefs(string Theme, double FontScale);
+    /// <summary>Cursor glow and page transitions. Off means no motion at all.</summary>
+    public static bool Effects { get; private set; } = true;
+
+    /// <summary>Raised when <see cref="Effects"/> changes, so open windows can react at once.</summary>
+    public static event Action? EffectsChanged;
+
+    private sealed record Prefs(string Theme, double FontScale, bool Effects = true);
 
     public static void Load()
     {
@@ -36,6 +42,7 @@ public static class ThemeService
             if (p is null) return;
             Theme = Enum.TryParse<AppTheme>(p.Theme, out var t) ? t : AppTheme.Red;
             FontScale = Math.Clamp(p.FontScale, 0.85, 1.75);
+            Effects = p.Effects;
         }
         catch { /* fall back to defaults */ }
     }
@@ -45,7 +52,7 @@ public static class ThemeService
         try
         {
             Directory.CreateDirectory(Path.GetDirectoryName(ConfigPath)!);
-            File.WriteAllText(ConfigPath, JsonSerializer.Serialize(new Prefs(Theme.ToString(), FontScale)));
+            File.WriteAllText(ConfigPath, JsonSerializer.Serialize(new Prefs(Theme.ToString(), FontScale, Effects)));
         }
         catch { }
     }
@@ -68,5 +75,22 @@ public static class ThemeService
             Application.Current.Resources[key] = Math.Round(size * FontScale);
 
         Save();
+
+        // High contrast suppresses the glow, so a theme switch has to re-evaluate it too.
+        EffectsChanged?.Invoke();
     }
+
+    public static void SetEffects(bool enabled)
+    {
+        if (Effects == enabled) return;
+        Effects = enabled;
+        Save();
+        EffectsChanged?.Invoke();
+    }
+
+    /// <summary>
+    /// High contrast turns the glow off regardless of the preference — a moving light behind the
+    /// text is exactly what that theme exists to avoid.
+    /// </summary>
+    public static bool EffectsAllowed => Effects && Theme != AppTheme.HighContrast;
 }

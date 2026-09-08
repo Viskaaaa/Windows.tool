@@ -1,6 +1,9 @@
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Animation;
 using RigBooster.Services;
 using RigBooster.Views;
 
@@ -16,13 +19,32 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+
         LicenseFooter.Text = $"Activated — {LicenseService.ActivatedUser}";
         _settings.Deactivated += () => { Close(); };
         _dashboard.NavigateToCache += () => Nav.SelectedIndex = 1;
 
+        ThemeService.EffectsChanged += ApplyEffectPreference;
+        Closed += (_, _) => ThemeService.EffectsChanged -= ApplyEffectPreference;
+        ApplyEffectPreference();
+
         // Selects the first page, which raises Nav_SelectionChanged and fills Host. Done here
         // rather than as SelectedIndex="0" in XAML, where it fires mid-InitializeComponent.
         Nav.SelectedIndex = 0;
+    }
+
+    private void ApplyEffectPreference()
+        => CursorGlow.Visibility = ThemeService.EffectsAllowed ? Visibility.Visible : Visibility.Collapsed;
+
+    /// <summary>Moves the radial glow to follow the pointer.</summary>
+    private void Window_MouseMove(object sender, MouseEventArgs e)
+    {
+        if (!ThemeService.EffectsAllowed || ActualWidth <= 0 || ActualHeight <= 0) return;
+
+        var p = e.GetPosition(this);
+        var point = new Point(p.X / ActualWidth, p.Y / ActualHeight);
+        GlowBrush.Center = point;
+        GlowBrush.GradientOrigin = point;
     }
 
     private void Nav_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -39,9 +61,30 @@ public partial class MainWindow : Window
             _ => _dashboard
         };
 
+        AnimatePageIn();
+
         // Move focus into the page so keyboard and screen-reader users land where they expect.
         var page = Host.Content as UIElement;
         Dispatcher.InvokeAsync(() => page?.MoveFocus(new TraversalRequest(FocusNavigationDirection.First)));
+    }
+
+    /// <summary>Short fade and rise as a page swaps in. Skipped entirely when effects are off.</summary>
+    private void AnimatePageIn()
+    {
+        if (!ThemeService.EffectsAllowed)
+        {
+            Host.Opacity = 1;
+            HostShift.Y = 0;
+            return;
+        }
+
+        var ease = new CubicEase { EasingMode = EasingMode.EaseOut };
+        var duration = TimeSpan.FromMilliseconds(180);
+
+        Host.BeginAnimation(OpacityProperty,
+            new DoubleAnimation(0, 1, duration) { EasingFunction = ease });
+        HostShift.BeginAnimation(TranslateTransform.YProperty,
+            new DoubleAnimation(14, 0, duration) { EasingFunction = ease });
     }
 
     private void GoToPage_Executed(object sender, ExecutedRoutedEventArgs e)

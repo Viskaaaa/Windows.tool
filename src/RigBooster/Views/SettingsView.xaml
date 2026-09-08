@@ -40,6 +40,12 @@
                                      Checked="Theme_Changed" AutomationProperties.Name="High contrast theme"/>
                     </StackPanel>
 
+                    <TextBlock Style="{StaticResource Text.Label}" Margin="0,16,0,4" Text="Motion"/>
+                    <CheckBox x:Name="EffectsCheck" Content="Cursor glow and page animations"
+                              Checked="Effects_Changed" Unchecked="Effects_Changed"
+                              AutomationProperties.Name="Cursor glow and page animations"
+                              AutomationProperties.HelpText="Turn off to remove all movement from the interface. Always off in the high contrast theme."/>
+
                     <TextBlock x:Name="ScaleLabel" Style="{StaticResource Text.Label}" Margin="0,16,0,4"
                                Text="Text size: 100%"/>
                     <Slider x:Name="ScaleSlider" Minimum="0.85" Maximum="1.75" TickFrequency="0.05"
