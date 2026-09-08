@@ -11,18 +11,25 @@
     <sys:Double x:Key="Font.H1">22</sys:Double>
     <sys:Double x:Key="Font.Huge">40</sys:Double>
 
-    <!-- Focus ring: visible on every focusable control, never colour-only (it is a shape). -->
-    <Style x:Key="FocusRing">
+    <!-- Focus ring, shown only while navigating by keyboard. App.xaml.cs swaps the "FocusRing"
+         key between these two on the first Tab and back again on the next mouse click, so a
+         clicked button does not sprout an outline while keyboard users keep theirs. -->
+    <Style x:Key="FocusRing.Visible">
         <Setter Property="Control.Template">
             <Setter.Value>
                 <ControlTemplate>
-                    <Rectangle Margin="-3" StrokeThickness="2" RadiusX="8" RadiusY="8"
-                               Stroke="{DynamicResource Brush.Focus}" StrokeDashArray="3 2"
+                    <Rectangle Margin="-4" StrokeThickness="2" RadiusX="10" RadiusY="10"
+                               Stroke="{DynamicResource Brush.Focus}"
                                SnapsToDevicePixels="True"/>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
+
+    <!-- No template, so nothing is drawn. -->
+    <Style x:Key="FocusRing.None"/>
+
+    <Style x:Key="FocusRing" BasedOn="{StaticResource FocusRing.None}"/>
 
     <Style TargetType="TextBlock">
         <Setter Property="Foreground" Value="{DynamicResource Brush.Text}"/>
@@ -73,7 +80,7 @@
         <Setter Property="MinWidth" Value="120"/>
         <Setter Property="Padding" Value="18,8"/>
         <Setter Property="Cursor" Value="Hand"/>
-        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusRing}"/>
+        <Setter Property="FocusVisualStyle" Value="{DynamicResource FocusRing}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
@@ -130,7 +137,7 @@
         <Setter Property="FontSize" Value="{DynamicResource Font.Base}"/>
         <Setter Property="MinHeight" Value="40"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
-        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusRing}"/>
+        <Setter Property="FocusVisualStyle" Value="{DynamicResource FocusRing}"/>
     </Style>
 
     <Style TargetType="TextBox">
@@ -142,11 +149,11 @@
         <Setter Property="FontSize" Value="{DynamicResource Font.Base}"/>
         <Setter Property="MinHeight" Value="40"/>
         <Setter Property="Padding" Value="10,6"/>
-        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusRing}"/>
+        <Setter Property="FocusVisualStyle" Value="{DynamicResource FocusRing}"/>
     </Style>
 
     <Style TargetType="Slider">
-        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusRing}"/>
+        <Setter Property="FocusVisualStyle" Value="{DynamicResource FocusRing}"/>
         <Setter Property="MinHeight" Value="40"/>
     </Style>
 
@@ -155,7 +162,7 @@
         <Setter Property="FontSize" Value="{DynamicResource Font.Base}"/>
         <Setter Property="MinHeight" Value="40"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
-        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusRing}"/>
+        <Setter Property="FocusVisualStyle" Value="{DynamicResource FocusRing}"/>
     </Style>
 
     <!-- Sidebar navigation item -->
@@ -165,7 +172,7 @@
         <Setter Property="MinHeight" Value="48"/>
         <Setter Property="Padding" Value="14,0"/>
         <Setter Property="Margin" Value="0,2"/>
-        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusRing}"/>
+        <Setter Property="FocusVisualStyle" Value="{DynamicResource FocusRing}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ListBoxItem">

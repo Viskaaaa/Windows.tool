@@ -54,14 +54,16 @@
                                         </Grid.ColumnDefinitions>
                                         <StackPanel VerticalAlignment="Center">
                                             <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold"/>
-                                            <TextBlock Text="{Binding SettingsPath}" Style="{StaticResource Text.Label}"/>
+                                            <TextBlock Text="{Binding Role}" Style="{StaticResource Text.Label}"/>
                                         </StackPanel>
                                         <StackPanel Grid.Column="1" Orientation="Horizontal">
                                             <Button Content="Restore" Style="{StaticResource Button.Ghost}"
                                                     MinWidth="100" Margin="0,0,10,0" Click="Restore_Click"
+                                                    IsEnabled="{Binding CanApply}"
                                                     AutomationProperties.Name="Restore original settings for this game"/>
                                             <Button Content="Apply preset" Style="{StaticResource Button.Primary}"
                                                     MinWidth="130" Click="Apply_Click"
+                                                    IsEnabled="{Binding CanApply}"
                                                     AutomationProperties.Name="Apply the selected preset to this game"/>
                                         </StackPanel>
                                     </Grid>

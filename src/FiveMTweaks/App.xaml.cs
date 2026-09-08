@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Threading;
 using FiveMTweaks.Services;
 using FiveMTweaks.Views;
@@ -25,6 +26,8 @@ public partial class App : Application
         };
         AppDomain.CurrentDomain.UnhandledException += (_, args) =>
             Report(args.ExceptionObject as Exception, "background thread");
+
+        WatchInputMode();
 
         try
         {
@@ -52,6 +55,30 @@ public partial class App : Application
             Report(ex, "startup");
             Shutdown();
         }
+    }
+
+    /// <summary>
+    /// Focus outlines belong to keyboard users. Showing them on a mouse click reads as a rendering
+    /// glitch, so the ring only appears once someone actually navigates with the keyboard.
+    /// </summary>
+    private static void WatchInputMode()
+    {
+        EventManager.RegisterClassHandler(typeof(Window), Keyboard.PreviewKeyDownEvent,
+            new KeyEventHandler((_, e) =>
+            {
+                if (e.Key is Key.Tab or Key.Left or Key.Right or Key.Up or Key.Down)
+                    ShowFocusRing(true);
+            }));
+
+        EventManager.RegisterClassHandler(typeof(Window), Mouse.PreviewMouseDownEvent,
+            new MouseButtonEventHandler((_, _) => ShowFocusRing(false)));
+    }
+
+    private static void ShowFocusRing(bool visible)
+    {
+        var key = visible ? "FocusRing.Visible" : "FocusRing.None";
+        if (Current.TryFindResource(key) is Style style)
+            Current.Resources["FocusRing"] = style;
     }
 
     private static void Report(Exception? ex, string where)

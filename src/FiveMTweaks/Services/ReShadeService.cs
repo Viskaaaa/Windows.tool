@@ -31,39 +31,69 @@ public static class ReShadeService
         public string PresetPath { get; init; } = "";
     }
 
-    /// <summary>Looks where FiveM and GTA V actually keep their loader DLLs.</summary>
+    /// <summary>Loader names, plus anything called *reshade*.dll, in any of the folders below.</summary>
+    private static readonly string[] LoaderNames =
+        { "dxgi.dll", "d3d11.dll", "d3d12.dll", "opengl32.dll", "ReShade64.dll", "ReShade32.dll", "ReShade.dll" };
+
+    /// <summary>
+    /// FiveM loads ReShade out of FiveM.app\plugins, not from beside the executable the way a
+    /// normal game does, so the plugins folders are searched first.
+    /// </summary>
     public static Install? Detect()
     {
         var local = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-        var candidates = new List<string>
+        var roots = new[]
         {
+            Path.Combine(local, "FiveM", "FiveM.app", "plugins"),
+            Path.Combine(local, "FiveM", "plugins"),
             Path.Combine(local, "FiveM", "FiveM.app"),
             Path.Combine(local, "FiveM"),
         };
 
-        foreach (var dir in candidates.Where(Directory.Exists))
+        foreach (var dir in roots.Where(Directory.Exists))
         {
-            foreach (var name in new[] { "dxgi.dll", "d3d11.dll", "opengl32.dll" })
+            var dll = FindLoader(dir);
+            if (dll is null) continue;
+
+            // The ini usually sits beside the DLL, but with a plugins install it often lives one
+            // level up in FiveM.app. Take whichever exists.
+            var ini = FirstExisting(
+                Path.Combine(dir, "ReShade.ini"),
+                Path.Combine(Directory.GetParent(dir)?.FullName ?? dir, "ReShade.ini"));
+
+            var iniDir = ini.Length > 0 ? Path.GetDirectoryName(ini)! : dir;
+
+            return new Install(dir, dll, ini, !dll.EndsWith(".disabled", StringComparison.OrdinalIgnoreCase))
             {
-                var active = Path.Combine(dir, name);
-                var parked = active + ".disabled";
-
-                if (!File.Exists(active) && !File.Exists(parked)) continue;
-                if (!LooksLikeReShade(dir)) continue;
-
-                var ini = Path.Combine(dir, "ReShade.ini");
-                return new Install(dir, File.Exists(active) ? active : parked, ini, File.Exists(active))
-                {
-                    PresetPath = ReadPresetPath(ini, dir)
-                };
-            }
+                PresetPath = ReadPresetPath(ini, iniDir)
+            };
         }
         return null;
     }
 
-    private static bool LooksLikeReShade(string dir)
-        => File.Exists(Path.Combine(dir, "ReShade.ini"))
-           || Directory.Exists(Path.Combine(dir, "reshade-shaders"));
+    private static string? FindLoader(string dir)
+    {
+        foreach (var name in LoaderNames)
+        {
+            var active = Path.Combine(dir, name);
+            if (File.Exists(active)) return active;
+
+            var parked = active + ".disabled";
+            if (File.Exists(parked)) return parked;
+        }
+
+        // Catches renamed builds such as ReShade64_FiveM.dll.
+        try
+        {
+            return Directory.EnumerateFiles(dir, "*.dll*")
+                .FirstOrDefault(f => Path.GetFileName(f).Contains("reshade", StringComparison.OrdinalIgnoreCase));
+        }
+        catch { return null; }
+    }
+
+    private static string FirstExisting(params string[] paths)
+        => paths.FirstOrDefault(File.Exists) ?? "";
+
 
     private static string ReadPresetPath(string ini, string dir)
     {
@@ -79,8 +109,8 @@ public static class ReShadeService
     /// </summary>
     public static TweakResult EnablePerformanceMode(Install install)
     {
-        if (!File.Exists(install.IniPath))
-            return new(false, "No ReShade.ini yet — launch the game once with ReShade loaded first.");
+        if (string.IsNullOrEmpty(install.IniPath) || !File.Exists(install.IniPath))
+            return new(false, "No ReShade.ini found yet. Launch FiveM once with ReShade loaded, then try again.");
 
         try
         {

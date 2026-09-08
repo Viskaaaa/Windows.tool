@@ -67,6 +67,14 @@ public sealed class GameTarget
     /// <summary>Settings file this profile rewrites (GTA V settings.xml for FiveM).</summary>
     public string SettingsPath { get; init; } = "";
     public bool Detected => !string.IsNullOrEmpty(SettingsPath) && System.IO.File.Exists(SettingsPath);
+
+    /// <summary>
+    /// False for the FiveM client config, which is listed for reference only. Servers write to that
+    /// file themselves, so a preset there would be overwritten and could break the client.
+    /// </summary>
+    public bool CanApply => Id != "fivemcfg";
+
+    public string Role => CanApply ? SettingsPath : SettingsPath + "   (read only — shown for reference)";
     public bool HasBackup => Detected && System.IO.File.Exists(SettingsPath + ".fivemtweaks.bak");
 }
 
