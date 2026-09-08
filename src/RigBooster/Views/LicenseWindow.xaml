@@ -33,12 +33,20 @@
             <!-- Error text carries an icon glyph as well as colour, and is announced when it changes. -->
             <Border x:Name="ErrorBox" Style="{StaticResource Pill}" Visibility="Collapsed"
                     Background="{DynamicResource Brush.CardAlt}" Margin="0,12,0,0">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="&#x26A0;" Margin="0,0,8,0" Foreground="{DynamicResource Brush.Danger}"/>
-                    <TextBlock x:Name="ErrorText" Foreground="{DynamicResource Brush.Danger}"
+                <!-- Grid, not a horizontal StackPanel: the star column bounds the text so a long
+                     message wraps instead of being clipped by the window edge. -->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="&#x26A0;" Margin="0,0,8,0" VerticalAlignment="Top"
+                               Foreground="{DynamicResource Brush.Danger}"/>
+                    <TextBlock x:Name="ErrorText" Grid.Column="1" TextWrapping="Wrap"
+                               Foreground="{DynamicResource Brush.Danger}"
                                AutomationProperties.LiveSetting="Assertive"
                                AutomationProperties.Name="Activation error"/>
-                </StackPanel>
+                </Grid>
             </Border>
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">

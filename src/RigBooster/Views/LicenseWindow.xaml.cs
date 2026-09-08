@@ -31,7 +31,13 @@ public partial class LicenseWindow : Window
                 break;
 
             case LicenseService.Result.TableMissing:
-                ShowError("The built-in key list is missing or unreadable. This build needs rebuilding.");
+                ShowError("No key list was built into this app. Whoever built it needs to run the "
+                          + "licensegen pack step and rebuild.");
+                break;
+
+            case LicenseService.Result.TableUnreadable:
+                ShowError("The key list will not decrypt — the build secret does not match the one "
+                          + "it was packed with. Repack licenses.dat with the secret in LicenseService.cs.");
                 break;
 
             default:

@@ -53,7 +53,7 @@ public static class LicenseService
         catch { return false; }
     }
 
-    public enum Result { Ok, BadFormat, NotFound, TableMissing }
+    public enum Result { Ok, BadFormat, NotFound, TableMissing, TableUnreadable }
 
     /// <summary>
     /// Keys are 4-32 letters and/or digits. Word keys are allowed, so they are matched
@@ -75,7 +75,8 @@ public static class LicenseService
 
         List<(string User, string Hash)> table;
         try { table = Table(); }
-        catch { return Result.TableMissing; }
+        catch (FileNotFoundException) { return Result.TableMissing; }   // not embedded at build time
+        catch { return Result.TableUnreadable; }                        // embedded, but wrong secret
         if (table.Count == 0) return Result.TableMissing;
 
         var hash = Sha256(NormalizeKey(key));
