@@ -1,7 +1,5 @@
-# One "username,key" pair per line. Lines starting with # are ignored.
-# A key is 4-32 letters and/or digits; capitals are ignored when matching.
-# Generate random 6-digit ones with:  dotnet run --project tools/LicenseGen -- new <secret> <username> 5
-viska,481902
+# One "username,key" pair per line. Keys: 4-32 letters/numbers, capitals don't matter.
+# The username is optional at the login screen - the key alone is enough.
+client,111111
+viska,viska9
 giorgakis,giorgakis
-Crazakos,kostas
-

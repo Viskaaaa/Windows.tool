@@ -10,9 +10,26 @@ public partial class LicenseWindow : Window
 {
     private int _attempts;
 
-    public LicenseWindow() => InitializeComponent();
+    public LicenseWindow()
+    {
+        InitializeComponent();
+
+        // Honour the motion preference here too, not just in the main window.
+        if (!ThemeService.EffectsAllowed) CursorGlow.Visibility = Visibility.Collapsed;
+    }
 
     // Block anything the key format cannot contain, rather than letting it fail on submit.
+    /// <summary>Moves the glow with the pointer, exactly as the main window does.</summary>
+    private void Window_MouseMove(object sender, MouseEventArgs e)
+    {
+        if (!ThemeService.EffectsAllowed || ActualWidth <= 0 || ActualHeight <= 0) return;
+
+        var p = e.GetPosition(this);
+        var point = new Point(p.X / ActualWidth, p.Y / ActualHeight);
+        GlowBrush.Center = point;
+        GlowBrush.GradientOrigin = point;
+    }
+
     private void KeyBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         => e.Handled = !e.Text.All(char.IsAsciiLetterOrDigit);
 
@@ -27,7 +44,7 @@ public partial class LicenseWindow : Window
                 return;
 
             case LicenseService.Result.BadFormat:
-                ShowError("Enter a username, and a key of 4 to 32 letters or numbers.");
+                ShowError("Enter a key of 4 to 32 letters or numbers.");
                 break;
 
             case LicenseService.Result.TableMissing:
@@ -43,8 +60,8 @@ public partial class LicenseWindow : Window
             default:
                 _attempts++;
                 ShowError(_attempts >= 3
-                    ? "That username and key do not match. Ask whoever gave you the key to check it."
-                    : "That username and key do not match.");
+                    ? "That key was not recognised. Ask whoever gave it to you to check it."
+                    : "That key was not recognised.");
                 break;
         }
 

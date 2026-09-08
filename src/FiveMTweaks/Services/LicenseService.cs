@@ -70,7 +70,7 @@ public static class LicenseService
         username = username.Trim();
         key = key.Trim();
 
-        if (!IsWellFormedKey(key) || username.Length == 0)
+        if (!IsWellFormedKey(key))
             return Result.BadFormat;
 
         List<(string User, string Hash)> table;
@@ -79,9 +79,11 @@ public static class LicenseService
         catch { return Result.TableUnreadable; }                        // embedded, but wrong secret
         if (table.Count == 0) return Result.TableMissing;
 
+        // The key is the credential. A username is only an extra filter when one is typed, so a
+        // key on its own is enough to sign in.
         var hash = Sha256(NormalizeKey(key));
         var match = table.FirstOrDefault(r =>
-            string.Equals(r.User, username, StringComparison.OrdinalIgnoreCase) &&
+            (username.Length == 0 || string.Equals(r.User, username, StringComparison.OrdinalIgnoreCase)) &&
             CryptographicOperations.FixedTimeEquals(
                 Encoding.ASCII.GetBytes(r.Hash), Encoding.ASCII.GetBytes(hash)));
 
