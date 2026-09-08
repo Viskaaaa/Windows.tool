@@ -111,7 +111,7 @@
                             AutomationProperties.HelpText="Arrow keys adjust in 5 percent steps, from 85 to 175 percent."/>
 
                     <TextBlock Style="{StaticResource Text.Label}" Margin="0,16,0,0"
-                               Text="Keyboard: Tab moves between controls, Enter or Space activates, Escape closes dialogs, Ctrl+1 to Ctrl+6 jump between pages."/>
+                               Text="Keyboard: Tab moves between controls, Enter or Space activates, Escape closes dialogs, Ctrl+1 to Ctrl+7 jump between pages."/>
                 </StackPanel>
             </Border>
 

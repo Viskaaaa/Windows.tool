@@ -15,6 +15,7 @@ public partial class MainWindow : Window
     private readonly CacheCleanerView _cache = new();
     private readonly GameOptimizerView _optimizer = new();
     private readonly BoostView _boost = new();
+    private readonly TweaksView _tweaks = new();
     private readonly ActivityView _activity = new();
     private readonly SettingsView _settings = new();
 
@@ -156,8 +157,9 @@ public partial class MainWindow : Window
             1 => _cache,
             2 => _optimizer,
             3 => _boost,
-            4 => _activity,
-            5 => _settings,
+            4 => _tweaks,
+            5 => _activity,
+            6 => _settings,
             _ => _dashboard
         };
 
