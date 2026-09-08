@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -33,6 +34,7 @@ public partial class App : Application
         {
             ThemeService.Load();
             ThemeService.Apply(ThemeService.Theme, ThemeService.FontScale);
+            BackgroundPrefs.Load();
 
             // License gate: nothing else opens until this passes.
             if (!LicenseService.TryRestoreActivation())
@@ -48,7 +50,13 @@ public partial class App : Application
             var main = new MainWindow();
             MainWindow = main;
             ShutdownMode = ShutdownMode.OnMainWindowClose;
-            main.Show();
+
+            // Launched by the Windows startup entry: create the window so the watcher and tray are
+            // live, but leave it hidden rather than interrupting whatever the user is doing.
+            var startHidden = e.Args.Any(a =>
+                string.Equals(a, BackgroundPrefs.TrayArgument, StringComparison.OrdinalIgnoreCase));
+
+            if (!startHidden) main.Show();
         }
         catch (Exception ex)
         {

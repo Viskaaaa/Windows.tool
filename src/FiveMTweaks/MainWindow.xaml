@@ -14,6 +14,7 @@
         <KeyBinding Key="D3" Modifiers="Control" Command="{x:Static NavigationCommands.GoToPage}" CommandParameter="2"/>
         <KeyBinding Key="D4" Modifiers="Control" Command="{x:Static NavigationCommands.GoToPage}" CommandParameter="3"/>
         <KeyBinding Key="D5" Modifiers="Control" Command="{x:Static NavigationCommands.GoToPage}" CommandParameter="4"/>
+        <KeyBinding Key="D6" Modifiers="Control" Command="{x:Static NavigationCommands.GoToPage}" CommandParameter="5"/>
     </Window.InputBindings>
 
     <Window.CommandBindings>
@@ -42,6 +43,9 @@
 
                     <StackPanel DockPanel.Dock="Bottom" Margin="6,16,6,4">
                         <TextBlock x:Name="LicenseFooter" Style="{StaticResource Text.Label}" Text="Activated"/>
+                        <TextBlock x:Name="WatcherFooter" Style="{StaticResource Text.Label}" Text="FiveM: not running"
+                                   AutomationProperties.LiveSetting="Polite"
+                                   AutomationProperties.Name="FiveM background status"/>
                     </StackPanel>
 
                     <ListBox x:Name="Nav" Background="Transparent" BorderThickness="0"
@@ -49,11 +53,12 @@
                              SelectionChanged="Nav_SelectionChanged"
                              KeyboardNavigation.TabNavigation="Once"
                              AutomationProperties.Name="Main navigation">
-                        <ListBoxItem Content="Dashboard"      AutomationProperties.Name="Dashboard, page 1 of 5. Shortcut Control 1."/>
-                        <ListBoxItem Content="Cache cleaner"  AutomationProperties.Name="Cache cleaner, page 2 of 5. Shortcut Control 2."/>
-                        <ListBoxItem Content="Game optimizer" AutomationProperties.Name="Game optimizer, page 3 of 5. Shortcut Control 3."/>
-                        <ListBoxItem Content="FPS boost"      AutomationProperties.Name="FPS boost, page 4 of 5. Shortcut Control 4."/>
-                        <ListBoxItem Content="License"        AutomationProperties.Name="License and appearance, page 5 of 5. Shortcut Control 5."/>
+                        <ListBoxItem Content="Dashboard"      AutomationProperties.Name="Dashboard, page 1 of 6. Shortcut Control 1."/>
+                        <ListBoxItem Content="Cache cleaner"  AutomationProperties.Name="Cache cleaner, page 2 of 6. Shortcut Control 2."/>
+                        <ListBoxItem Content="Game optimizer" AutomationProperties.Name="Game optimizer, page 3 of 6. Shortcut Control 3."/>
+                        <ListBoxItem Content="FPS boost"      AutomationProperties.Name="FPS boost, page 4 of 6. Shortcut Control 4."/>
+                        <ListBoxItem Content="Activity"       AutomationProperties.Name="Activity, page 5 of 6. Shortcut Control 5."/>
+                        <ListBoxItem Content="License"        AutomationProperties.Name="License and appearance, page 6 of 6. Shortcut Control 6."/>
                     </ListBox>
                 </DockPanel>
             </Border>

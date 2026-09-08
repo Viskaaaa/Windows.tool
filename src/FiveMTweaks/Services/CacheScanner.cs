@@ -150,9 +150,11 @@ public static class CacheScanner
     public static Task<DeleteReport> DeleteAsync(IEnumerable<JunkItem> items, IProgress<string>? progress, CancellationToken ct = default)
         => Task.Run(() =>
         {
+            // Materialised up front: the sequence is walked twice, once to delete and once to count.
+            var targets = items.ToList();
             long freed = 0; int files = 0; var skipped = new List<string>();
 
-            foreach (var item in items)
+            foreach (var item in targets)
             {
                 ct.ThrowIfCancellationRequested();
                 progress?.Report($"Cleaning {item.Name}…");
@@ -182,6 +184,10 @@ public static class CacheScanner
 
                 item.SizeBytes = Directory.Exists(item.Path) ? DirectorySize(item.Path, ct) : 0;
             }
+
+            if (freed > 0)
+                JournalService.Record("Cache", "Junk files deleted", $"{targets.Count} folder(s)",
+                    $"{Format.Bytes(freed)} freed across {files} files.", reversible: false);
 
             return new DeleteReport(freed, files, skipped);
         }, ct);

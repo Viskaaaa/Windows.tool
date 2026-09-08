@@ -28,6 +28,26 @@
                 </StackPanel>
             </Border>
 
+            <Border Style="{StaticResource Card}" Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource Text.H2}" Text="Background"/>
+                    <TextBlock Style="{StaticResource Text.Label}" Margin="0,2,0,8"
+                               Text="Keep tracking FiveM after you close the window. Sessions and changes are saved either way — this only decides whether tracking continues while the window is shut."/>
+
+                    <CheckBox x:Name="KeepRunningCheck" Content="Keep running in the tray when I close the window"
+                              Checked="Background_Changed" Unchecked="Background_Changed"
+                              AutomationProperties.Name="Keep running in the notification area when the window is closed"
+                              AutomationProperties.HelpText="Exit from the tray icon's right-click menu closes it fully."/>
+                    <CheckBox x:Name="NotifyCheck" Content="Notify me when FiveM starts and stops"
+                              Checked="Background_Changed" Unchecked="Background_Changed"
+                              AutomationProperties.Name="Notify me when FiveM starts and stops"/>
+                    <CheckBox x:Name="StartupCheck" Content="Start with Windows, straight to the tray"
+                              Checked="Startup_Changed" Unchecked="Startup_Changed"
+                              AutomationProperties.Name="Start with Windows, opening straight to the tray"
+                              AutomationProperties.HelpText="Adds a per-user startup entry. No administrator rights needed."/>
+                </StackPanel>
+            </Border>
+
             <Border Style="{StaticResource Card}">
                 <StackPanel>
                     <TextBlock Style="{StaticResource Text.H2}" Text="Appearance"/>
@@ -56,7 +76,7 @@
                             AutomationProperties.HelpText="Arrow keys adjust in 5 percent steps, from 85 to 175 percent."/>
 
                     <TextBlock Style="{StaticResource Text.Label}" Margin="0,16,0,0"
-                               Text="Keyboard: Tab moves between controls, Enter or Space activates, Escape closes dialogs, Ctrl+1 to Ctrl+5 jump between pages."/>
+                               Text="Keyboard: Tab moves between controls, Enter or Space activates, Escape closes dialogs, Ctrl+1 to Ctrl+6 jump between pages."/>
                 </StackPanel>
             </Border>
 

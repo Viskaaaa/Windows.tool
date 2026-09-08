@@ -149,6 +149,8 @@ public static class ReShadeService
                 return new(false, "The write did not stick. Close FiveM completely — ReShade rewrites "
                                   + "ReShade.ini when the game exits and will undo edits made while it is open.");
 
+            JournalService.Record("ReShade", "Performance mode on", install.IniPath,
+                "PerformanceMode set to 1.");
             return new(true, "Performance mode on in ReShade.ini. It takes effect the next time you launch FiveM.", 1);
         }
         catch (Exception ex) { return new(false, $"Could not edit ReShade.ini: {ex.Message}"); }
@@ -190,6 +192,8 @@ public static class ReShadeService
                 return new(true, "No expensive effects were enabled — nothing to strip.");
 
             File.WriteAllLines(preset, lines);
+            JournalService.Record("ReShade", "Expensive effects stripped", preset,
+                $"{removed} technique(s) removed from the preset.");
             return new(true, $"Removed {removed} expensive effect(s) from the preset. Restore puts them back.", removed);
         }
         catch (Exception ex) { return new(false, $"Could not edit the preset: {ex.Message}"); }
@@ -213,12 +217,14 @@ public static class ReShadeService
                 if (File.Exists(active)) return new(true, "ReShade is already on.");
                 if (!File.Exists(parked)) return new(false, "Could not find the parked ReShade DLL.");
                 File.Move(parked, active);
+                JournalService.Record("ReShade", "ReShade enabled", active, "Loader DLL restored.");
                 return new(true, "ReShade switched back on.", 1);
             }
 
             if (!File.Exists(active)) return new(true, "ReShade is already off.");
             if (File.Exists(parked)) File.Delete(parked);
             File.Move(active, parked);
+            JournalService.Record("ReShade", "ReShade disabled", active, "Loader DLL renamed to .disabled.");
             return new(true, "ReShade switched off. This is the biggest single FPS gain it can give.", 1);
         }
         catch (IOException)

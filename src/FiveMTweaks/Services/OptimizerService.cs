@@ -137,6 +137,8 @@ public static class OptimizerService
                 return new(true, "Already matching the preset — nothing to change.", 0);
 
             File.WriteAllText(game.SettingsPath, text);
+            JournalService.Record("Settings", $"{profile} preset applied", game.SettingsPath,
+                $"{changed} values changed in {game.DisplayName}. Original kept as .fivemtweaks.bak.");
             return new(true, $"Applied the {profile} preset. {changed} settings changed. Original saved as a .bak next to it.", changed);
         }
         catch (UnauthorizedAccessException)
@@ -156,6 +158,8 @@ public static class OptimizerService
         try
         {
             File.Copy(bak, game.SettingsPath, overwrite: true);
+            JournalService.Record("Settings", "Settings restored", game.SettingsPath,
+                $"{game.DisplayName} put back to its original file.", reversible: false);
             return new(true, "Original settings restored.", 0);
         }
         catch (Exception ex) { return new(false, $"Could not restore: {ex.Message}", 0); }
@@ -205,6 +209,13 @@ public static class OptimizerService
     }
 
     /// <summary>Backs up once and never overwrites — the first backup is the pristine one.</summary>
+    /// <summary>Records the change, then returns the result to show the user.</summary>
+    private static ApplyResult Logged(string category, string action, string target, string detail, string message)
+    {
+        JournalService.Record(category, action, target, detail);
+        return new(true, message, 1);
+    }
+
     private static void Backup(string path)
     {
         var bak = path + BackupSuffix;
@@ -222,7 +233,9 @@ public static class OptimizerService
             { CreateNoWindow = true, UseShellExecute = false });
             p?.WaitForExit(5000);
             return p?.ExitCode == 0
-                ? new(true, "Power plan set to High performance.", 1)
+                ? Logged("Windows", "High performance power plan", "powercfg /setactive",
+                         "Active power scheme switched to High performance.",
+                         "Power plan set to High performance.")
                 : new(false, "powercfg refused the change. On some laptops this plan is hidden by the vendor.", 0);
         }
         catch (Exception ex) { return new(false, $"Could not change the power plan: {ex.Message}", 0); }
@@ -235,6 +248,8 @@ public static class OptimizerService
             using var k = Registry.CurrentUser.CreateSubKey(@"Software\Microsoft\GameBar");
             k?.SetValue("AllowAutoGameMode", 1, RegistryValueKind.DWord);
             k?.SetValue("AutoGameModeEnabled", 1, RegistryValueKind.DWord);
+            JournalService.Record("Windows", "Game Mode on", @"HKCU\Software\Microsoft\GameBar",
+                "AutoGameModeEnabled set to 1.");
             return new(true, "Windows Game Mode turned on.", 1);
         }
         catch (Exception ex) { return new(false, $"Could not set Game Mode: {ex.Message}", 0); }
@@ -246,6 +261,8 @@ public static class OptimizerService
         {
             using var k = Registry.CurrentUser.CreateSubKey(@"System\GameConfigStore");
             k?.SetValue("GameDVR_Enabled", 0, RegistryValueKind.DWord);
+            JournalService.Record("Windows", "Game DVR off", @"HKCU\System\GameConfigStore",
+                "GameDVR_Enabled set to 0.");
             return new(true, "Background game recording (Game DVR) turned off. Sign out and back in to apply.", 1);
         }
         catch (Exception ex) { return new(false, $"Could not turn off Game DVR: {ex.Message}", 0); }

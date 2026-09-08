@@ -23,6 +23,9 @@ public partial class SettingsView : UserControl
             ContrastRadio.IsChecked = ThemeService.Theme == AppTheme.HighContrast;
             ScaleSlider.Value = ThemeService.FontScale;
             EffectsCheck.IsChecked = ThemeService.Effects;
+            KeepRunningCheck.IsChecked = BackgroundPrefs.KeepRunning;
+            NotifyCheck.IsChecked = BackgroundPrefs.NotifyOnLaunch;
+            StartupCheck.IsChecked = BackgroundPrefs.StartsWithWindows;
             ScaleLabel.Text = $"Text size: {ThemeService.FontScale * 100:0}%";
             _ready = true;
         };
@@ -45,6 +48,28 @@ public partial class SettingsView : UserControl
     {
         if (!_ready) return;
         ThemeService.SetEffects(EffectsCheck.IsChecked == true);
+    }
+
+    private void Background_Changed(object sender, RoutedEventArgs e)
+    {
+        if (!_ready) return;
+        BackgroundPrefs.Set(KeepRunningCheck.IsChecked == true, NotifyCheck.IsChecked == true);
+    }
+
+    private void Startup_Changed(object sender, RoutedEventArgs e)
+    {
+        if (!_ready) return;
+
+        var wanted = StartupCheck.IsChecked == true;
+        if (BackgroundPrefs.SetStartWithWindows(wanted)) return;
+
+        // Put the box back rather than showing a tick for something that did not happen.
+        _ready = false;
+        StartupCheck.IsChecked = !wanted;
+        _ready = true;
+        MessageBox.Show(Window.GetWindow(this),
+            "Windows would not let the startup entry be changed.",
+            "Start with Windows", MessageBoxButton.OK, MessageBoxImage.Warning);
     }
 
     private void Deactivate_Click(object sender, RoutedEventArgs e)

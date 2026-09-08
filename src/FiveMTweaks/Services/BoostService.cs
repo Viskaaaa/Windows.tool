@@ -47,6 +47,7 @@ public static class BoostService
                 return new(true, "Fullscreen optimisations were already off for FiveM.");
 
             key?.SetValue(exe, ("~ " + existing.Replace("~", "").Trim() + " DISABLEDXMAXIMIZEDWINDOWEDMODE").Replace("  ", " "));
+            JournalService.Record("Windows", "Fullscreen optimisations off", $@"HKCU\{LayersKey}", exe);
             return new(true, "Fullscreen optimisations turned off for FiveM. Steadier frame times in fullscreen.", 1);
         }
         catch (Exception ex) { return new(false, $"Could not set the compatibility flag: {ex.Message}"); }
@@ -62,6 +63,7 @@ public static class BoostService
         {
             using var key = Registry.CurrentUser.CreateSubKey(GpuPrefKey);
             key?.SetValue(exe, "GpuPreference=2;");   // 2 = high performance
+            JournalService.Record("Windows", "High-performance GPU preferred", $@"HKCU\{GpuPrefKey}", exe);
             return new(true, "FiveM set to use the high-performance GPU.", 1);
         }
         catch (Exception ex) { return new(false, $"Could not set the GPU preference: {ex.Message}"); }
@@ -115,6 +117,10 @@ public static class BoostService
 
             using (var key = Registry.CurrentUser.OpenSubKey(GpuPrefKey, writable: true))
                 if (key?.GetValue(exe) is not null) { key.DeleteValue(exe, false); undone++; }
+
+            if (undone > 0)
+                JournalService.Record("Windows", "FiveM tweaks undone", "HKCU", 
+                    $"{undone} registry tweak(s) removed.", reversible: false);
 
             return undone == 0
                 ? new(true, "Nothing to undo — neither tweak was applied.")
