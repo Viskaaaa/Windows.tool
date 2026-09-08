@@ -1,0 +1,89 @@
+<UserControl x:Class="ViskaTweak.Views.CacheCleanerView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             AutomationProperties.Name="Cache cleaner">
+    <DockPanel>
+
+        <StackPanel DockPanel.Dock="Top" Margin="0,0,0,16">
+            <TextBlock Style="{StaticResource Text.H1}" Text="Cache cleaner"/>
+            <TextBlock Style="{StaticResource Text.Secondary}" Margin="0,6,0,0"
+                       Text="Everything below is a cache the game or Windows rebuilds by itself. Nothing is deleted until you confirm the exact list."/>
+        </StackPanel>
+
+        <!-- Action bar -->
+        <Border DockPanel.Dock="Bottom" Style="{StaticResource Card}" Margin="0,16,0,0">
+            <Grid>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock x:Name="SelectionText" FontWeight="SemiBold" Text="Nothing selected"
+                               AutomationProperties.LiveSetting="Polite"
+                               AutomationProperties.Name="Current selection"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button x:Name="ScanButton" Content="Rescan" Style="{StaticResource Button.Ghost}"
+                            Margin="0,0,10,0" Click="Scan_Click"
+                            AutomationProperties.Name="Rescan for junk files"/>
+                    <Button x:Name="CleanButton" Content="Clean selected" Style="{StaticResource Button.Primary}"
+                            Click="Clean_Click" IsEnabled="False"
+                            AutomationProperties.Name="Clean selected items, asks for confirmation first"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Status line -->
+        <Border DockPanel.Dock="Top" x:Name="StatusBox" Style="{StaticResource Pill}" Visibility="Collapsed"
+                Background="{DynamicResource Brush.CardAlt}" Margin="0,0,0,12" HorizontalAlignment="Left">
+            <TextBlock x:Name="StatusText" AutomationProperties.LiveSetting="Polite"
+                       AutomationProperties.Name="Status"/>
+        </Border>
+
+        <Border Style="{StaticResource Card}" Padding="8">
+            <Grid>
+                <ListBox x:Name="ItemList" Background="Transparent" BorderThickness="0"
+                         HorizontalContentAlignment="Stretch"
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                         AutomationProperties.Name="Junk found, checkable list">
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="Padding" Value="4"/>
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="Focusable" Value="False"/>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding Selected, Mode=TwoWay}"
+                                      Checked="Item_Toggled" Unchecked="Item_Toggled"
+                                      AutomationProperties.Name="{Binding Name}"
+                                      AutomationProperties.HelpText="{Binding Note}">
+                                <Grid Margin="8,6" HorizontalAlignment="Stretch">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Border Style="{StaticResource Pill}" Padding="6,2" MinHeight="0"
+                                                    Background="{DynamicResource Brush.CardAlt}" Margin="0,0,8,0">
+                                                <TextBlock Text="{Binding Category}" FontSize="{DynamicResource Font.Small}"
+                                                           Foreground="{DynamicResource Brush.TextSecondary}"/>
+                                            </Border>
+                                            <TextBlock Text="{Binding Name}" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                        <TextBlock Text="{Binding Path}" Style="{StaticResource Text.Label}" Margin="0,3,0,0"/>
+                                        <TextBlock Text="{Binding Note}" Style="{StaticResource Text.Label}"/>
+                                    </StackPanel>
+                                    <TextBlock Grid.Column="1" Text="{Binding SizeDisplay}" FontWeight="SemiBold"
+                                               VerticalAlignment="Center" Margin="12,0,4,0"/>
+                                </Grid>
+                            </CheckBox>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <TextBlock x:Name="EmptyText" Text="Press Rescan to look for cache files."
+                           Style="{StaticResource Text.Secondary}" HorizontalAlignment="Center"
+                           VerticalAlignment="Center"/>
+            </Grid>
+        </Border>
+    </DockPanel>
+</UserControl>

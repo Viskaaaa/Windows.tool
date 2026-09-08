@@ -13,12 +13,12 @@ if errorlevel 1 (
     exit /b 1
 )
 
-if not exist "src\FiveMTweaks\licenses.dat" (
+if not exist "src\ViskaTweak\licenses.dat" (
     echo  No license table yet - run build-exe.bat once first.
     pause
     exit /b 1
 )
 
-echo  Starting FiveM Tweaks. The window opens in a few seconds...
-dotnet run --project src/FiveMTweaks
+echo  Starting Viska Tweak. The window opens in a few seconds...
+dotnet run --project src/ViskaTweak
 if errorlevel 1 pause

@@ -1,4 +1,4 @@
-# FiveM Tweaks
+# Viska Tweak
 
 Single-file Windows desktop app: finds and clears game cache junk (FiveM first), reads the PC's
 hardware, applies a low-end settings preset, and shows an estimated before/after FPS. Gated behind a
@@ -9,7 +9,7 @@ Built around a low-end baseline: GT 1030 / 8 GB RAM / 4-core CPU is the default 
 ## Layout
 
 ```
-src/FiveMTweaks/            .NET 8 + WPF app
+src/ViskaTweak/            .NET 8 + WPF app
   Services/                LicenseService, HardwareService, CacheScanner, OptimizerService,
                            FpsEstimator, ThemeService, AppState
   Views/                   LicenseWindow, DashboardView, CacheCleanerView, GameOptimizerView,
@@ -23,14 +23,14 @@ tools/LicenseGen/          console tool that builds the encrypted licenses.dat
 Windows only — WPF does not compile on macOS or Linux. Needs the .NET 8 SDK.
 
 1. Pick a build secret and put the same string in two places:
-   - `src/FiveMTweaks/Services/LicenseService.cs` → `BuildSecret`
+   - `src/ViskaTweak/Services/LicenseService.cs` → `BuildSecret`
    - the `<secret>` argument you pass to `licensegen`
 
 2. Generate keys and pack them:
 
 ```bash
 dotnet run --project tools/LicenseGen -- new my-build-secret friendname 5 > users.txt
-dotnet run --project tools/LicenseGen -- pack my-build-secret users.txt src/FiveMTweaks/licenses.dat
+dotnet run --project tools/LicenseGen -- pack my-build-secret users.txt src/ViskaTweak/licenses.dat
 ```
 
 Or write `users.txt` by hand — one `username,key` per line. A key is 4-32 letters and/or digits and
@@ -45,10 +45,10 @@ encrypts the whole table with AES-256 (PBKDF2-SHA256, 200k iterations, per-file 
 3. Publish the single exe:
 
 ```bash
-dotnet publish src/FiveMTweaks/FiveMTweaks.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeAllContentForSelfExtract=true
+dotnet publish src/ViskaTweak/ViskaTweak.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeAllContentForSelfExtract=true
 ```
 
-Output: `src/FiveMTweaks/bin/Release/net8.0-windows/win-x64/publish/FiveMTweaks.exe`. Trimming is off
+Output: `src/ViskaTweak/bin/Release/net8.0-windows/win-x64/publish/ViskaTweak.exe`. Trimming is off
 on purpose — WPF and `System.Management` both reflect, and a trimmed build fails at runtime.
 
 ## Things worth being straight about
@@ -80,11 +80,20 @@ space by category.
 GPU-vendor shader caches, and Steam libraries scanned by folder-name pattern so unknown games are
 covered too.
 
-**Game optimizer** — rewrites GTA V `settings.xml` from a tier preset. The low profile also cuts
+**Game optimizer** — rewrites GTA V `settings.xml` from a preset. Potato holds nothing back: every
+dial at its floor, every distance at zero, deferred lighting and fog volumes off. It looks bad on
+purpose, and it is for a machine that cannot otherwise hold a playable frame rate. The low profile also cuts
 ped and vehicle variety, extended distance scaling and streaming, which is what spikes frame times
 on a busy server.
 
-**FPS boost** — FiveM-specific, all per-user and reversible:
+**FPS boost** — all per-user and reversible:
+- Desktop animations, window shadows and transparency off. Windows composites those on the same
+  GPU the game wants, which is not free on an integrated chip or a GT 1030.
+- Startup app manager. Disabling one parks the entry in our own key rather than deleting it, so
+  enabling restores exactly what was there. On 8 GB this is the largest recoverable chunk of memory
+  available, and worth more than any graphics setting.
+
+FiveM-specific:
 - Fullscreen optimisations off, which evens out frame times rather than raising the average
 - High-performance GPU preference, for laptops with two graphics chips
 - Process priority raised while the game is running (above normal, not high - high starves audio
@@ -95,12 +104,12 @@ on a busy server.
 
 ## Installing it on someone's PC
 
-Give them `FiveMTweaks.exe` and either:
+Give them `ViskaTweak.exe` and either:
 
 - open it and use **License → Install on this PC**, or
 - run `install.bat` next to the exe.
 
-Both copy it to `%LocalAppData%\FiveM Tweaks`, add a Start menu and desktop shortcut, and register
+Both copy it to `%LocalAppData%\Viska Tweak`, add a Start menu and desktop shortcut, and register
 it in Add or Remove Programs. Everything is per-user (LocalAppData and HKCU) so no administrator
 rights are needed and no other account on the machine is touched.
 
@@ -113,7 +122,7 @@ cannot delete itself.
 - Nothing is deleted without a confirmation dialog that names every folder and the total size.
 - Only caches that the game or Windows rebuilds by itself are listed. Files locked by a running game
   are skipped, not forced.
-- Settings files are copied to `<file>.fivemtweaks.bak` before the first write, and the backup is
+- Settings files are copied to `<file>.viskatweak.bak` before the first write, and the backup is
   never overwritten, so **Restore** always returns the pristine file.
 - The three Windows tweaks are opt-in per checkbox and reversible from **Undo tweaks**.
 

@@ -1,7 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
 
-// Builds the encrypted licenses.dat that FiveMTweaks embeds.
+// Builds the encrypted licenses.dat that ViskaTweak embeds.
 //
 //   dotnet run --project tools/LicenseGen -- new  <secret> <username> [count]
 //   dotnet run --project tools/LicenseGen -- pack <secret> <users.txt> <out.dat>
@@ -32,7 +32,7 @@ switch (mode)
             Console.WriteLine($"{name},{key}");
         }
         Console.Error.WriteLine("\nSave those pairs somewhere safe — the key itself is never recoverable from the .dat.");
-        Console.Error.WriteLine("Then: licensegen pack <secret> users.txt src/FiveMTweaks/licenses.dat");
+        Console.Error.WriteLine("Then: licensegen pack <secret> users.txt src/ViskaTweak/licenses.dat");
         return 0;
     }
 
