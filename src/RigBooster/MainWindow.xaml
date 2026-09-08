@@ -33,7 +33,7 @@
 
                 <ListBox x:Name="Nav" Background="Transparent" BorderThickness="0"
                          ItemContainerStyle="{StaticResource NavItem}"
-                         SelectedIndex="0" SelectionChanged="Nav_SelectionChanged"
+                         SelectionChanged="Nav_SelectionChanged"
                          KeyboardNavigation.TabNavigation="Once"
                          AutomationProperties.Name="Main navigation">
                     <ListBoxItem Content="Dashboard"      AutomationProperties.Name="Dashboard, page 1 of 4. Shortcut Control 1."/>

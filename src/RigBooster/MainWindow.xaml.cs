@@ -19,11 +19,18 @@ public partial class MainWindow : Window
         LicenseFooter.Text = $"Activated — {LicenseService.ActivatedUser}";
         _settings.Deactivated += () => { Close(); };
         _dashboard.NavigateToCache += () => Nav.SelectedIndex = 1;
-        Host.Content = _dashboard;
+
+        // Selects the first page, which raises Nav_SelectionChanged and fills Host. Done here
+        // rather than as SelectedIndex="0" in XAML, where it fires mid-InitializeComponent.
+        Nav.SelectedIndex = 0;
     }
 
     private void Nav_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
+        // ListBox raises this while its own XAML is still being parsed, before the rest of the
+        // window exists. Nothing to switch to until Host has been created.
+        if (Host is null) return;
+
         Host.Content = Nav.SelectedIndex switch
         {
             1 => _cache,
