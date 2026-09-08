@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Xml.Linq;
+using System.Text.RegularExpressions;
 using Microsoft.Win32;
 using RigBooster.Models;
 
@@ -85,28 +85,35 @@ public static class OptimizerService
             return new(false, "That settings file is no longer there. Launch the game once, then rescan.", 0);
 
         if (game.Id == "fivemcfg")
-            return new(false, "The client config is listed for reference only — Rig Booster does not rewrite it.", 0);
+            return new(false, "The client config is listed for reference only — this tool does not rewrite it.", 0);
 
         try
         {
             Backup(game.SettingsPath);
 
-            var doc = XDocument.Load(game.SettingsPath);
+            // Rewritten with a targeted regex rather than an XML parser. Two reasons: the XDocument
+            // assembly fails to resolve inside the single-file bundle, and settings.xml is a flat
+            // machine-generated file of <Node value="x" /> lines, so a value swap leaves every other
+            // byte - ordering, whitespace, unknown nodes - exactly as the game wrote it.
+            var text = File.ReadAllText(game.SettingsPath);
             var preset = Preset(tier);
             int changed = 0;
 
-            foreach (var el in doc.Descendants())
+            foreach (var (node, value) in preset)
             {
-                if (!preset.TryGetValue(el.Name.LocalName, out var value)) continue;
-                var attr = el.Attribute("value");
-                if (attr is null) { el.SetAttributeValue("value", value); changed++; }
-                else if (attr.Value != value) { attr.Value = value; changed++; }
+                var pattern = $"(<{Regex.Escape(node)}\\s+value=\")([^\"]*)(\")";
+                text = Regex.Replace(text, pattern, m =>
+                {
+                    if (m.Groups[2].Value == value) return m.Value;
+                    changed++;
+                    return m.Groups[1].Value + value + m.Groups[3].Value;
+                }, RegexOptions.IgnoreCase);
             }
 
             if (changed == 0)
                 return new(true, "Already matching the preset — nothing to change.", 0);
 
-            doc.Save(game.SettingsPath);
+            File.WriteAllText(game.SettingsPath, text);
             return new(true, $"Applied the {tier} preset. {changed} settings changed. Original saved as a .bak next to it.", changed);
         }
         catch (UnauthorizedAccessException)

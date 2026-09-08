@@ -3,3 +3,5 @@
 # Generate random 6-digit ones with:  dotnet run --project tools/LicenseGen -- new <secret> <username> 5
 viska,481902
 giorgakis,giorgakis
+Crazakos,kostas
+

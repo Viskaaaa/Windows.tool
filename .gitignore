@@ -6,3 +6,4 @@ licenses.dat
 users.txt
 .DS_Store
 crash.log
+crash*.log
