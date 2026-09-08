@@ -42,6 +42,14 @@ public partial class BoostView : UserControl
         ReShadeState.SetResourceReference(TextBlock.ForegroundProperty,
             _reshade.Enabled ? "Brush.Warning" : "Brush.Success");
         ToggleButton.Content = _reshade.Enabled ? "Turn ReShade off" : "Turn ReShade on";
+
+        var state = ReShadeService.ReadState(_reshade);
+        PerfState.Text = state.PerformanceMode ? "On" : "Off";
+        PerfState.SetResourceReference(TextBlock.ForegroundProperty,
+            state.PerformanceMode ? "Brush.Success" : "Brush.TextSecondary");
+
+        EffectState.Text = state.EnabledEffects < 0 ? "preset not found" : state.EnabledEffects.ToString();
+        PresetState.Text = string.IsNullOrEmpty(state.PresetName) ? "none" : state.PresetName;
     }
 
     private void Fso_Click(object sender, RoutedEventArgs e) => Show(BoostService.DisableFullscreenOptimisations());
@@ -61,6 +69,7 @@ public partial class BoostView : UserControl
     {
         if (_reshade is null) return;
         Show(ReShadeService.EnablePerformanceMode(_reshade));
+        Refresh();
     }
 
     private void Strip_Click(object sender, RoutedEventArgs e)
@@ -71,6 +80,7 @@ public partial class BoostView : UserControl
                      + "The preset is backed up first, and Restore puts them all back."))
             return;
         Show(ReShadeService.StripHeavyEffects(_reshade));
+        Refresh();
     }
 
     private void Toggle_Click(object sender, RoutedEventArgs e)
@@ -91,6 +101,7 @@ public partial class BoostView : UserControl
     {
         if (_reshade is null) return;
         Show(ReShadeService.Restore(_reshade));
+        Refresh();
     }
 
     private bool Confirm(string message)

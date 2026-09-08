@@ -75,8 +75,34 @@
                     </Grid>
                     <TextBlock x:Name="ReShadePath" Style="{StaticResource Text.Label}" Margin="0,2,0,12"/>
 
-                    <TextBlock Style="{StaticResource Text.Secondary}" Margin="0,0,0,12"
+                    <TextBlock Style="{StaticResource Text.Secondary}" Margin="0,0,0,10"
                                Text="Straight answer: ReShade costs frames, it never adds them. These options make it cheaper, or switch it off."/>
+
+                    <!-- Read back from disk after every action, so a change is visible rather than
+                         having to be taken on trust. -->
+                    <Border Background="{DynamicResource Brush.CardAlt}" CornerRadius="8" Padding="12"
+                            Margin="0,0,0,12">
+                        <StackPanel AutomationProperties.Name="Current ReShade settings">
+                            <Grid Margin="0,0,0,4">
+                                <TextBlock Style="{StaticResource Text.Label}" Text="Performance mode"/>
+                                <TextBlock x:Name="PerfState" HorizontalAlignment="Right" Text="—"
+                                           FontWeight="SemiBold" FontSize="{DynamicResource Font.Small}"/>
+                            </Grid>
+                            <Grid Margin="0,0,0,4">
+                                <TextBlock Style="{StaticResource Text.Label}" Text="Effects enabled"/>
+                                <TextBlock x:Name="EffectState" HorizontalAlignment="Right" Text="—"
+                                           FontWeight="SemiBold" FontSize="{DynamicResource Font.Small}"/>
+                            </Grid>
+                            <Grid>
+                                <TextBlock Style="{StaticResource Text.Label}" Text="Active preset"/>
+                                <TextBlock x:Name="PresetState" HorizontalAlignment="Right" Text="—"
+                                           FontWeight="SemiBold" FontSize="{DynamicResource Font.Small}"/>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <TextBlock Style="{StaticResource Text.Label}" Margin="0,0,0,10"
+                               Text="Close FiveM before changing anything here. ReShade rewrites its own config when the game exits, and will undo edits made while it is running. Changes apply on the next launch."/>
 
                     <WrapPanel x:Name="ReShadeButtons">
                         <Button Content="Performance mode" Style="{StaticResource Button.Ghost}" Margin="0,0,10,10"

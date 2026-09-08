@@ -103,6 +103,32 @@ public static class ReShadeService
         return Path.IsPathRooted(value) ? value : Path.GetFullPath(Path.Combine(dir, value));
     }
 
+    /// <summary>What is actually set right now, read back from disk.</summary>
+    public sealed record State(bool PerformanceMode, int EnabledEffects, string PresetName);
+
+    public static State ReadState(Install install)
+    {
+        var perf = false;
+        if (!string.IsNullOrEmpty(install.IniPath) && File.Exists(install.IniPath))
+            perf = ReadKey(install.IniPath, "GENERAL", "PerformanceMode") == "1";
+
+        var effects = -1;
+        var name = "";
+        if (!string.IsNullOrEmpty(install.PresetPath) && File.Exists(install.PresetPath))
+        {
+            name = Path.GetFileName(install.PresetPath);
+            foreach (var line in File.ReadLines(install.PresetPath))
+            {
+                if (!line.StartsWith("Techniques=", StringComparison.OrdinalIgnoreCase)) continue;
+                effects = line["Techniques=".Length..]
+                    .Split(',', StringSplitOptions.RemoveEmptyEntries).Length;
+                break;
+            }
+        }
+
+        return new State(perf, effects, name);
+    }
+
     /// <summary>
     /// PerformanceMode skips ReShade's per-frame uniform handling and shader recompiles. It is the
     /// single cheapest win available while still keeping the effects on.
@@ -115,10 +141,15 @@ public static class ReShadeService
         try
         {
             Backup(install.IniPath);
-            WriteKey(install.IniPath, "GENERAL", "PerformanceMode", "1");
+
+            var ok = WriteKey(install.IniPath, "GENERAL", "PerformanceMode", "1");
             WriteKey(install.IniPath, "GENERAL", "NoDebugInfo", "1");
-            WriteKey(install.IniPath, "SCREENSHOT", "SaveBeforeShot", "0");
-            return new(true, "Performance mode on. Effects still run, with less per-frame overhead.", 3);
+
+            if (!ok)
+                return new(false, "The write did not stick. Close FiveM completely — ReShade rewrites "
+                                  + "ReShade.ini when the game exits and will undo edits made while it is open.");
+
+            return new(true, "Performance mode on in ReShade.ini. It takes effect the next time you launch FiveM.", 1);
         }
         catch (Exception ex) { return new(false, $"Could not edit ReShade.ini: {ex.Message}"); }
     }
@@ -238,7 +269,8 @@ public static class ReShadeService
         return "";
     }
 
-    private static void WriteKey(string path, string section, string key, string value)
+    /// <summary>Writes key=value into a section, returning false if it did not stick.</summary>
+    private static bool WriteKey(string path, string section, string key, string value)
     {
         var lines = File.ReadAllLines(path).ToList();
         var sectionAt = lines.FindIndex(l => l.Trim().Equals($"[{section}]", StringComparison.OrdinalIgnoreCase));
@@ -247,21 +279,34 @@ public static class ReShadeService
         {
             lines.Add($"[{section}]");
             lines.Add($"{key}={value}");
-            File.WriteAllLines(path, lines);
-            return;
         }
-
-        for (var i = sectionAt + 1; i < lines.Count; i++)
+        else
         {
-            if (lines[i].TrimStart().StartsWith('[')) { lines.Insert(i, $"{key}={value}"); break; }
-            if (lines[i].TrimStart().StartsWith(key + "=", StringComparison.OrdinalIgnoreCase))
+            var written = false;
+            for (var i = sectionAt + 1; i < lines.Count; i++)
             {
-                lines[i] = $"{key}={value}";
-                break;
+                if (lines[i].TrimStart().StartsWith('['))
+                {
+                    lines.Insert(i, $"{key}={value}");
+                    written = true;
+                    break;
+                }
+                if (lines[i].TrimStart().StartsWith(key + "=", StringComparison.OrdinalIgnoreCase))
+                {
+                    lines[i] = $"{key}={value}";
+                    written = true;
+                    break;
+                }
             }
-            if (i == lines.Count - 1) lines.Add($"{key}={value}");
+
+            // Covers a section that is last in the file, empty, or has no matching key - the old
+            // loop silently wrote nothing at all when the header was the final line.
+            if (!written) lines.Insert(Math.Min(sectionAt + 1, lines.Count), $"{key}={value}");
         }
 
         File.WriteAllLines(path, lines);
+
+        // Read it back: ReShade rewrites this file itself, so "we wrote it" is not proof.
+        return ReadKey(path, section, key) == value;
     }
 }
