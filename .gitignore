@@ -1,0 +1,7 @@
+bin/
+obj/
+*.user
+# Never commit the real key table or the plaintext pairs that produced it.
+licenses.dat
+users.txt
+.DS_Store

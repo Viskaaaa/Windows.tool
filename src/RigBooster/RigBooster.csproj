@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>RigBooster</RootNamespace>
+    <AssemblyName>RigBooster</AssemblyName>
+
+    <!-- Single-file self-contained publish -->
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <!-- Trimming is OFF on purpose: WPF + System.Management reflect heavily. -->
+    <PublishTrimmed>false</PublishTrimmed>
+
+    <Version>1.0.0</Version>
+    <Product>Rig Booster</Product>
+    <AssemblyTitle>Rig Booster</AssemblyTitle>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Management" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Encrypted license table, baked into the exe. Generate with tools/LicenseGen. -->
+    <EmbeddedResource Include="licenses.dat" Condition="Exists('licenses.dat')" />
+  </ItemGroup>
+
+</Project>
