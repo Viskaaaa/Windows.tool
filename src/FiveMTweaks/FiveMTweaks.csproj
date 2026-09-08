@@ -1,0 +1,51 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>FiveMTweaks</RootNamespace>
+    <AssemblyName>FiveMTweaks</AssemblyName>
+
+    <!-- Single-file self-contained publish -->
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <!-- Trimming is OFF on purpose: WPF + System.Management reflect heavily. -->
+    <PublishTrimmed>false</PublishTrimmed>
+
+    <Version>1.0.0</Version>
+    <Product>FiveM Tweaks</Product>
+    <ApplicationIcon>app.ico</ApplicationIcon>
+    <AssemblyTitle>FiveM Tweaks</AssemblyTitle>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Management" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Same icon for the exe and for every window's title bar. -->
+    <Resource Include="app.ico"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Encrypted license table, baked into the exe. Generate with tools/LicenseGen.
+         Absolute path and explicit LogicalName so the manifest name cannot drift with
+         RootNamespace or the directory the build was launched from. -->
+    <EmbeddedResource Include="$(MSBuildProjectDirectory)/licenses.dat"
+                      LogicalName="FiveMTweaks.licenses.dat"
+                      Condition="Exists('$(MSBuildProjectDirectory)/licenses.dat')" />
+  </ItemGroup>
+
+  <!-- Fail the build loudly instead of shipping an exe that cannot activate anyone. -->
+  <Target Name="RequireLicenseTable" BeforeTargets="BeforeBuild">
+    <Error Condition="!Exists('$(MSBuildProjectDirectory)/licenses.dat')"
+           Text="licenses.dat is missing, so nobody could activate this build. Generate it first:&#xA;  dotnet run --project tools/LicenseGen -- pack YOUR-SECRET users.txt src/FiveMTweaks/licenses.dat" />
+  </Target>
+
+</Project>

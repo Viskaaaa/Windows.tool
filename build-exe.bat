@@ -2,14 +2,14 @@
 setlocal
 cd /d "%~dp0"
 
-rem Double-click this to produce the shareable RigBooster.exe.
+rem Double-click this to produce the shareable FiveMTweaks.exe.
 rem Keep the secret below identical to BuildSecret in
-rem src\RigBooster\Services\LicenseService.cs, or the app cannot read its own key table.
+rem src\FiveMTweaks\Services\LicenseService.cs, or the app cannot read its own key table.
 set SECRET=PsHiRveTG2Bq4EXx6GiwJliYBTvlxgMbfj7xVxuu
 
 echo.
 echo  ==============================
-echo   Rig Booster - building
+echo   FiveM Tweaks - building
 echo  ==============================
 echo.
 
@@ -34,7 +34,7 @@ if not exist "users.txt" (
 )
 
 echo  [1/2] Packing license keys...
-dotnet run --project tools/LicenseGen -- pack %SECRET% users.txt src/RigBooster/licenses.dat
+dotnet run --project tools/LicenseGen -- pack %SECRET% users.txt src/FiveMTweaks/licenses.dat
 if errorlevel 1 (
     echo.
     echo  Packing the keys failed. Check that users.txt has one "name,key" per line.
@@ -44,7 +44,7 @@ if errorlevel 1 (
 
 echo.
 echo  [2/2] Building the app. First run takes a few minutes - this is normal.
-dotnet publish src/RigBooster/RigBooster.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeAllContentForSelfExtract=true
+dotnet publish src/FiveMTweaks/FiveMTweaks.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeAllContentForSelfExtract=true
 if errorlevel 1 (
     echo.
     echo  The build failed. Copy the red lines above and send them over.
@@ -52,11 +52,11 @@ if errorlevel 1 (
     exit /b 1
 )
 
-set OUT=src\RigBooster\bin\Release\net8.0-windows\win-x64\publish
+set OUT=src\FiveMTweaks\bin\Release\net8.0-windows\win-x64\publish
 
 echo.
 echo  ==============================
-echo   Done. RigBooster.exe is in:
+echo   Done. FiveMTweaks.exe is in:
 echo   %OUT%
 echo  ==============================
 echo.
@@ -65,5 +65,5 @@ echo  On their first run Windows shows a blue SmartScreen box:
 echo  click "More info" then "Run anyway".
 echo.
 
-if exist "%OUT%\RigBooster.exe" explorer "%OUT%"
+if exist "%OUT%\FiveMTweaks.exe" explorer "%OUT%"
 pause

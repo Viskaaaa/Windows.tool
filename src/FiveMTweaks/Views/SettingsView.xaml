@@ -1,0 +1,65 @@
+<UserControl x:Class="FiveMTweaks.Views.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             AutomationProperties.Name="License and appearance">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Focusable="False">
+        <StackPanel>
+
+            <TextBlock Style="{StaticResource Text.H1}" Text="License and appearance"/>
+
+            <Border Style="{StaticResource Card}" Margin="0,16,0,16">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource Text.H2}" Text="License"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                        <Border Style="{StaticResource Pill}" Background="{DynamicResource Brush.SuccessBg}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#x2713;" Margin="0,0,8,0" Foreground="{DynamicResource Brush.Success}"/>
+                                <TextBlock x:Name="LicenseStatus" Text="Activated"
+                                           Foreground="{DynamicResource Brush.Success}" FontWeight="SemiBold"
+                                           AutomationProperties.Name="License status"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                    <TextBlock Style="{StaticResource Text.Label}" Margin="0,10,0,12"
+                               Text="Deactivating forgets the key on this PC and closes the app. You will need the username and key again next launch."/>
+                    <Button Content="Deactivate this PC" Style="{StaticResource Button.Ghost}"
+                            HorizontalAlignment="Left" Click="Deactivate_Click"
+                            AutomationProperties.Name="Deactivate this PC and close the app"/>
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource Text.H2}" Text="Appearance"/>
+
+                    <TextBlock Style="{StaticResource Text.Label}" Margin="0,12,0,4" Text="Theme"/>
+                    <StackPanel Orientation="Horizontal">
+                        <RadioButton x:Name="RedRadio" Content="Dark red" GroupName="Theme" Margin="0,0,20,0"
+                                     Checked="Theme_Changed" AutomationProperties.Name="Dark red theme"/>
+                        <RadioButton x:Name="ContrastRadio" Content="High contrast" GroupName="Theme"
+                                     Checked="Theme_Changed" AutomationProperties.Name="High contrast theme"/>
+                    </StackPanel>
+
+                    <TextBlock Style="{StaticResource Text.Label}" Margin="0,16,0,4" Text="Motion"/>
+                    <CheckBox x:Name="EffectsCheck" Content="Cursor glow and page animations"
+                              Checked="Effects_Changed" Unchecked="Effects_Changed"
+                              AutomationProperties.Name="Cursor glow and page animations"
+                              AutomationProperties.HelpText="Turn off to remove all movement from the interface. Always off in the high contrast theme."/>
+
+                    <TextBlock x:Name="ScaleLabel" Style="{StaticResource Text.Label}" Margin="0,16,0,4"
+                               Text="Text size: 100%"/>
+                    <Slider x:Name="ScaleSlider" Minimum="0.85" Maximum="1.75" TickFrequency="0.05"
+                            IsSnapToTickEnabled="True" SmallChange="0.05" LargeChange="0.15"
+                            Width="320" HorizontalAlignment="Left"
+                            ValueChanged="Scale_Changed"
+                            AutomationProperties.Name="Text size"
+                            AutomationProperties.HelpText="Arrow keys adjust in 5 percent steps, from 85 to 175 percent."/>
+
+                    <TextBlock Style="{StaticResource Text.Label}" Margin="0,16,0,0"
+                               Text="Keyboard: Tab moves between controls, Enter or Space activates, Escape closes dialogs, Ctrl+1 to Ctrl+5 jump between pages."/>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

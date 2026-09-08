@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 140" width="520" height="140" role="img" aria-label="FiveM Tweaks">
+  <defs>
+    <radialGradient id="tile" cx="34%" cy="28%" r="95%">
+      <stop offset="0%" stop-color="#E4544F"/>
+      <stop offset="100%" stop-color="#220608"/>
+    </radialGradient>
+    <linearGradient id="bolt" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#FFD2CE"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="10" y="10" width="120" height="120" rx="26" fill="url(#tile)"/>
+  <path d="M79 20 L46 75 h20 l-8 45 l36 -57 h-20 z" fill="url(#bolt)"/>
+
+  <text x="156" y="76" font-family="Segoe UI, Inter, system-ui, sans-serif"
+        font-size="46" font-weight="700" fill="#F7EFEF" letter-spacing="-0.5">FiveM</text>
+  <text x="156" y="76" font-family="Segoe UI, Inter, system-ui, sans-serif"
+        font-size="46" font-weight="700" fill="#E4544F" letter-spacing="-0.5" dx="118">Tweaks</text>
+  <text x="158" y="106" font-family="Segoe UI, Inter, system-ui, sans-serif"
+        font-size="17" fill="#B3A9A9" letter-spacing="3.5">FPS · CACHE · RESHADE</text>
+</svg>

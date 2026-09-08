@@ -1,4 +1,4 @@
-# Rig Booster
+# FiveM Tweaks
 
 Single-file Windows desktop app: finds and clears game cache junk (FiveM first), reads the PC's
 hardware, applies a low-end settings preset, and shows an estimated before/after FPS. Gated behind a
@@ -9,7 +9,7 @@ Built around a low-end baseline: GT 1030 / 8 GB RAM / 4-core CPU is the default 
 ## Layout
 
 ```
-src/RigBooster/            .NET 8 + WPF app
+src/FiveMTweaks/            .NET 8 + WPF app
   Services/                LicenseService, HardwareService, CacheScanner, OptimizerService,
                            FpsEstimator, ThemeService, AppState
   Views/                   LicenseWindow, DashboardView, CacheCleanerView, GameOptimizerView,
@@ -23,14 +23,14 @@ tools/LicenseGen/          console tool that builds the encrypted licenses.dat
 Windows only — WPF does not compile on macOS or Linux. Needs the .NET 8 SDK.
 
 1. Pick a build secret and put the same string in two places:
-   - `src/RigBooster/Services/LicenseService.cs` → `BuildSecret`
+   - `src/FiveMTweaks/Services/LicenseService.cs` → `BuildSecret`
    - the `<secret>` argument you pass to `licensegen`
 
 2. Generate keys and pack them:
 
 ```bash
 dotnet run --project tools/LicenseGen -- new my-build-secret friendname 5 > users.txt
-dotnet run --project tools/LicenseGen -- pack my-build-secret users.txt src/RigBooster/licenses.dat
+dotnet run --project tools/LicenseGen -- pack my-build-secret users.txt src/FiveMTweaks/licenses.dat
 ```
 
 Or write `users.txt` by hand — one `username,key` per line. A key is 4-32 letters and/or digits and
@@ -45,10 +45,10 @@ encrypts the whole table with AES-256 (PBKDF2-SHA256, 200k iterations, per-file 
 3. Publish the single exe:
 
 ```bash
-dotnet publish src/RigBooster/RigBooster.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeAllContentForSelfExtract=true
+dotnet publish src/FiveMTweaks/FiveMTweaks.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeAllContentForSelfExtract=true
 ```
 
-Output: `src/RigBooster/bin/Release/net8.0-windows/win-x64/publish/RigBooster.exe`. Trimming is off
+Output: `src/FiveMTweaks/bin/Release/net8.0-windows/win-x64/publish/FiveMTweaks.exe`. Trimming is off
 on purpose — WPF and `System.Management` both reflect, and a trimmed build fails at runtime.
 
 ## Things worth being straight about
@@ -70,12 +70,35 @@ replace that class with a PresentMon capture before and after, parse the CSV, an
 than 4 GB report 4 GB. The tier classifier leans on RAM, thread count and the GPU name for that
 reason.
 
+## Features
+
+**Dashboard** — WMI hardware detection and a Low/Medium/High tier, live CPU and memory meters
+sampled from the kernel counters, an animated FPS estimate gauge, and a breakdown of reclaimable
+space by category.
+
+**Cache cleaner** — FiveM (cache, server assets, NUI, crashes, logs), Windows temp, DirectX and
+GPU-vendor shader caches, and Steam libraries scanned by folder-name pattern so unknown games are
+covered too.
+
+**Game optimizer** — rewrites GTA V `settings.xml` from a tier preset. The low profile also cuts
+ped and vehicle variety, extended distance scaling and streaming, which is what spikes frame times
+on a busy server.
+
+**FPS boost** — FiveM-specific, all per-user and reversible:
+- Fullscreen optimisations off, which evens out frame times rather than raising the average
+- High-performance GPU preference, for laptops with two graphics chips
+- Process priority raised while the game is running (above normal, not high - high starves audio
+  and input and feels worse)
+- ReShade: performance mode, stripping expensive techniques from the active preset, or switching
+  the loader off entirely by renaming its DLL. ReShade costs frames and never adds them, so every
+  option here makes it cheaper or removes it.
+
 ## Safety behaviour
 
 - Nothing is deleted without a confirmation dialog that names every folder and the total size.
 - Only caches that the game or Windows rebuilds by itself are listed. Files locked by a running game
   are skipped, not forced.
-- Settings files are copied to `<file>.rigbooster.bak` before the first write, and the backup is
+- Settings files are copied to `<file>.fivemtweaks.bak` before the first write, and the backup is
   never overwritten, so **Restore** always returns the pristine file.
 - The three Windows tweaks are opt-in per checkbox and reversible from **Undo tweaks**.
 

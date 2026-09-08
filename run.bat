@@ -13,12 +13,12 @@ if errorlevel 1 (
     exit /b 1
 )
 
-if not exist "src\RigBooster\licenses.dat" (
+if not exist "src\FiveMTweaks\licenses.dat" (
     echo  No license table yet - run build-exe.bat once first.
     pause
     exit /b 1
 )
 
-echo  Starting Rig Booster. The window opens in a few seconds...
-dotnet run --project src/RigBooster
+echo  Starting FiveM Tweaks. The window opens in a few seconds...
+dotnet run --project src/FiveMTweaks
 if errorlevel 1 pause

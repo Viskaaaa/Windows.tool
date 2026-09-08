@@ -1,0 +1,32 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- High contrast: pure black ground, pure white text (21:1), saturated accents.
+         Same keys as Palette.Red.xaml so it can be swapped at runtime. -->
+
+    <Color x:Key="Color.Accent">#FF4B4B</Color>
+
+    <SolidColorBrush x:Key="Brush.Window"        Color="#000000"/>
+    <SolidColorBrush x:Key="Brush.Sidebar"       Color="#000000"/>
+    <SolidColorBrush x:Key="Brush.Card"          Color="#000000"/>
+    <SolidColorBrush x:Key="Brush.CardAlt"       Color="#141414"/>
+    <SolidColorBrush x:Key="Brush.Border"        Color="#FFFFFF"/>
+
+    <SolidColorBrush x:Key="Brush.Accent"        Color="#FF4B4B"/>
+    <SolidColorBrush x:Key="Brush.AccentHover"   Color="#FF7A7A"/>
+    <SolidColorBrush x:Key="Brush.AccentPressed" Color="#E03030"/>
+    <SolidColorBrush x:Key="Brush.OnAccent"      Color="#000000"/>
+
+    <SolidColorBrush x:Key="Brush.Text"          Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="Brush.TextSecondary" Color="#E6E6E6"/>
+    <SolidColorBrush x:Key="Brush.TextDisabled"  Color="#B0B0B0"/>
+
+    <SolidColorBrush x:Key="Brush.Success"       Color="#4CFF95"/>
+    <SolidColorBrush x:Key="Brush.SuccessBg"     Color="#000000"/>
+    <SolidColorBrush x:Key="Brush.Warning"       Color="#FFD43B"/>
+    <SolidColorBrush x:Key="Brush.WarningBg"     Color="#000000"/>
+    <SolidColorBrush x:Key="Brush.Danger"        Color="#FF6B6B"/>
+
+    <SolidColorBrush x:Key="Brush.Focus"         Color="#FFFF00"/>
+
+</ResourceDictionary>
