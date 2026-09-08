@@ -26,6 +26,7 @@ public partial class SettingsView : UserControl
             KeepRunningCheck.IsChecked = BackgroundPrefs.KeepRunning;
             NotifyCheck.IsChecked = BackgroundPrefs.NotifyOnLaunch;
             StartupCheck.IsChecked = BackgroundPrefs.StartsWithWindows;
+            RefreshInstall();
             ScaleLabel.Text = $"Text size: {ThemeService.FontScale * 100:0}%";
             _ready = true;
         };
@@ -48,6 +49,47 @@ public partial class SettingsView : UserControl
     {
         if (!_ready) return;
         ThemeService.SetEffects(EffectsCheck.IsChecked == true);
+    }
+
+    private void RefreshInstall()
+    {
+        var installed = InstallService.IsInstalled;
+
+        InstallState.Text = InstallService.RunningFromInstall ? "Installed" : installed ? "Installed elsewhere" : "Not installed";
+        InstallState.SetResourceReference(TextBlock.ForegroundProperty,
+            installed ? "Brush.Success" : "Brush.TextSecondary");
+
+        InstallPath.Text = InstallService.InstallFolder;
+        InstallButton.Content = installed ? "Reinstall / update" : "Install";
+    }
+
+    private void Install_Click(object sender, RoutedEventArgs e)
+    {
+        var result = InstallService.Install(DesktopCheck.IsChecked == true);
+        ShowInstall(result.Ok, result.Message);
+        RefreshInstall();
+    }
+
+    private void Uninstall_Click(object sender, RoutedEventArgs e)
+    {
+        if (MessageBox.Show(Window.GetWindow(this),
+                "Remove the shortcuts and the Add or Remove Programs entry?\n\n"
+                + "Your settings, licence and history are left alone. The app folder has to be "
+                + "deleted by hand afterwards, because a running program cannot delete itself.",
+                "Uninstall", MessageBoxButton.OKCancel, MessageBoxImage.Question,
+                MessageBoxResult.Cancel) != MessageBoxResult.OK)
+            return;
+
+        var result = InstallService.Uninstall();
+        ShowInstall(result.Ok, result.Message);
+        RefreshInstall();
+    }
+
+    private void ShowInstall(bool ok, string message)
+    {
+        InstallStatusText.Text = message;
+        InstallStatusBox.Visibility = Visibility.Visible;
+        InstallStatusText.SetResourceReference(TextBlock.ForegroundProperty, ok ? "Brush.Text" : "Brush.Danger");
     }
 
     private void Background_Changed(object sender, RoutedEventArgs e)

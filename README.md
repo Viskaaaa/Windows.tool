@@ -93,6 +93,21 @@ on a busy server.
   the loader off entirely by renaming its DLL. ReShade costs frames and never adds them, so every
   option here makes it cheaper or removes it.
 
+## Installing it on someone's PC
+
+Give them `FiveMTweaks.exe` and either:
+
+- open it and use **License → Install on this PC**, or
+- run `install.bat` next to the exe.
+
+Both copy it to `%LocalAppData%\FiveM Tweaks`, add a Start menu and desktop shortcut, and register
+it in Add or Remove Programs. Everything is per-user (LocalAppData and HKCU) so no administrator
+rights are needed and no other account on the machine is touched.
+
+Uninstall from Add or Remove Programs, or from the same page in the app. Settings, licence and
+history are left alone; the install folder has to be deleted by hand, because a running program
+cannot delete itself.
+
 ## Safety behaviour
 
 - Nothing is deleted without a confirmation dialog that names every folder and the total size.

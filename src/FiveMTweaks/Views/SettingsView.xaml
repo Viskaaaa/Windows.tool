@@ -30,6 +30,41 @@
 
             <Border Style="{StaticResource Card}" Margin="0,0,0,16">
                 <StackPanel>
+                    <Grid>
+                        <TextBlock Style="{StaticResource Text.H2}" Text="Install on this PC"/>
+                        <Border x:Name="InstallPill" Style="{StaticResource Pill}" HorizontalAlignment="Right"
+                                Padding="10,4" MinHeight="0" Background="{DynamicResource Brush.CardAlt}">
+                            <TextBlock x:Name="InstallState" Text="Checking…" FontWeight="SemiBold"
+                                       FontSize="{DynamicResource Font.Small}"
+                                       AutomationProperties.Name="Install status"/>
+                        </Border>
+                    </Grid>
+                    <TextBlock Style="{StaticResource Text.Label}" Margin="0,2,0,10"
+                               Text="Copies the app into your user folder, adds a Start menu and desktop shortcut, and lists it in Add or Remove Programs. All per-user — no administrator rights needed."/>
+                    <TextBlock x:Name="InstallPath" Style="{StaticResource Text.Label}" Margin="0,0,0,10"/>
+
+                    <CheckBox x:Name="DesktopCheck" IsChecked="True" Content="Also put a shortcut on the desktop"
+                              AutomationProperties.Name="Also create a desktop shortcut"/>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                        <Button x:Name="InstallButton" Content="Install" Style="{StaticResource Button.Primary}"
+                                Margin="0,0,10,0" Click="Install_Click"
+                                AutomationProperties.Name="Install on this PC"/>
+                        <Button Content="Uninstall" Style="{StaticResource Button.Ghost}" Click="Uninstall_Click"
+                                AutomationProperties.Name="Remove shortcuts and the Add or Remove Programs entry"/>
+                    </StackPanel>
+
+                    <Border x:Name="InstallStatusBox" Style="{StaticResource Pill}" Visibility="Collapsed"
+                            Background="{DynamicResource Brush.CardAlt}" Margin="0,12,0,0">
+                        <TextBlock x:Name="InstallStatusText" TextWrapping="Wrap"
+                                   AutomationProperties.LiveSetting="Polite"
+                                   AutomationProperties.Name="Install status message"/>
+                    </Border>
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource Card}" Margin="0,0,0,16">
+                <StackPanel>
                     <TextBlock Style="{StaticResource Text.H2}" Text="Background"/>
                     <TextBlock Style="{StaticResource Text.Label}" Margin="0,2,0,8"
                                Text="Keep tracking FiveM after you close the window. Sessions and changes are saved either way — this only decides whether tracking continues while the window is shut."/>

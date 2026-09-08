@@ -36,6 +36,17 @@ public partial class App : Application
             ThemeService.Apply(ThemeService.Theme, ThemeService.FontScale);
             BackgroundPrefs.Load();
 
+            // Add or Remove Programs invokes the exe with this. Handle it before the licence gate:
+            // removing the app should never require signing into it.
+            if (e.Args.Any(a => string.Equals(a, "--uninstall", StringComparison.OrdinalIgnoreCase)))
+            {
+                var removal = InstallService.Uninstall();
+                MessageBox.Show(removal.Message, "FiveM Tweaks", MessageBoxButton.OK,
+                    removal.Ok ? MessageBoxImage.Information : MessageBoxImage.Warning);
+                Shutdown();
+                return;
+            }
+
             // License gate: nothing else opens until this passes.
             if (!LicenseService.TryRestoreActivation())
             {
