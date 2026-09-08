@@ -19,11 +19,17 @@
             <Border Style="{StaticResource Card}" Margin="0,0,0,16">
                 <StackPanel>
                     <TextBlock Style="{StaticResource Text.H2}" Text="Preset"/>
-                    <TextBlock x:Name="TierHint" Style="{StaticResource Text.Label}" Margin="0,2,0,10"
+                    <TextBlock x:Name="TierHint" Style="{StaticResource Text.Label}" Margin="0,2,0,4"
                                Text="Picked from your detected hardware. Override it if you disagree."/>
+                    <TextBlock Style="{StaticResource Text.Label}" Margin="0,0,0,10"
+                               Text="A higher average is not the same as a smoother game. Stability trades some peak FPS for even frame times — it is the right pick when the number looks fine but the game still feels jerky."/>
                     <StackPanel Orientation="Horizontal">
-                        <RadioButton x:Name="LowRadio" Content="Low — most FPS" Margin="0,0,20,0" IsChecked="True"
-                                     GroupName="Tier" AutomationProperties.Name="Low preset, highest frame rate"/>
+                        <RadioButton x:Name="StabilityRadio" Content="Stability — steadiest frames" Margin="0,0,20,0"
+                                     IsChecked="True" GroupName="Tier"
+                                     AutomationProperties.Name="Stability preset, steadiest frame times"
+                                     AutomationProperties.HelpText="Lower peak FPS than Low, held far more consistently. Recommended if the game feels jerky rather than slow."/>
+                        <RadioButton x:Name="LowRadio" Content="Low — highest average" Margin="0,0,20,0"
+                                     GroupName="Tier" AutomationProperties.Name="Low preset, highest average frame rate"/>
                         <RadioButton x:Name="MediumRadio" Content="Medium — balanced" Margin="0,0,20,0"
                                      GroupName="Tier" AutomationProperties.Name="Medium preset, balanced"/>
                         <RadioButton x:Name="HighRadio" Content="High — best looking"

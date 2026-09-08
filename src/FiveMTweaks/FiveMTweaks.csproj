@@ -14,7 +14,10 @@
     <SelfContained>true</SelfContained>
     <PublishSingleFile>true</PublishSingleFile>
     <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
-    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <!-- Off deliberately. Compressed bundles have been a source of assemblies failing to resolve
+         at runtime, which is exactly the failure seen with XDocument and Regex. A larger exe is
+         a fair trade for one that loads what it needs. -->
+    <EnableCompressionInSingleFile>false</EnableCompressionInSingleFile>
     <!-- Trimming is OFF on purpose: WPF + System.Management reflect heavily. -->
     <PublishTrimmed>false</PublishTrimmed>
 

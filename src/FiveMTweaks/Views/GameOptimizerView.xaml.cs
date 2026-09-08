@@ -24,20 +24,24 @@ public partial class GameOptimizerView : UserControl
             if (AppState.Hardware is { } hw)
             {
                 TierHint.Text = $"Your PC reads as {hw.TierDisplay.ToLowerInvariant()}. Override it if you disagree.";
+
+                // Weak hardware defaults to Stability, not Low: on these machines the complaint is
+                // almost always stutter rather than a low average.
                 (hw.Tier switch
                 {
                     PcTier.Medium => MediumRadio,
                     PcTier.High => HighRadio,
-                    _ => LowRadio
+                    _ => StabilityRadio
                 }).IsChecked = true;
             }
             LoadGames();
         };
     }
 
-    private PcTier SelectedTier =>
-        MediumRadio.IsChecked == true ? PcTier.Medium :
-        HighRadio.IsChecked == true ? PcTier.High : PcTier.Low;
+    private PresetProfile SelectedProfile =>
+        MediumRadio.IsChecked == true ? PresetProfile.Medium :
+        HighRadio.IsChecked == true ? PresetProfile.High :
+        LowRadio.IsChecked == true ? PresetProfile.Low : PresetProfile.Stability;
 
     private void LoadGames()
     {
@@ -57,7 +61,7 @@ public partial class GameOptimizerView : UserControl
         if ((sender as FrameworkElement)?.DataContext is not GameTarget game) return;
 
         var sb = new StringBuilder();
-        sb.AppendLine($"Apply the {SelectedTier} preset to {game.DisplayName}?");
+        sb.AppendLine($"Apply the {SelectedProfile} preset to {game.DisplayName}?");
         sb.AppendLine();
         sb.AppendLine(game.SettingsPath);
         sb.AppendLine();
@@ -74,12 +78,13 @@ public partial class GameOptimizerView : UserControl
             return;
         }
 
-        var result = OptimizerService.ApplyProfile(game, SelectedTier);
+        var result = OptimizerService.ApplyProfile(game, SelectedProfile);
         Status(result.Message);
 
         if (result.Ok && result.Changed > 0)
         {
             AppState.PresetApplied = true;
+            AppState.StabilityMode = SelectedProfile == PresetProfile.Stability;
             AppState.NotifyChanged();
         }
         LoadGames();

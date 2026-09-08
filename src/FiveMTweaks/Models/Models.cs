@@ -7,6 +7,14 @@ namespace FiveMTweaks.Models;
 
 public enum PcTier { Low, Medium, High }
 
+/// <summary>
+/// What the settings preset optimises for. Stability is its own profile rather than a variant of
+/// Low, because the settings that steady frame times are not the same ones that raise the average:
+/// streaming, world variety and texture pressure cause the spikes, while shadows and reflections
+/// mostly move the average.
+/// </summary>
+public enum PresetProfile { Stability, Low, Medium, High }
+
 public sealed class HardwareInfo
 {
     public string GpuName { get; init; } = "Unknown GPU";

@@ -11,7 +11,8 @@ namespace FiveMTweaks.Services;
 /// </summary>
 public static class FpsEstimator
 {
-    public static FpsEstimate Estimate(HardwareInfo hw, bool presetApplied, bool cachesCleaned, long freedBytes = 0)
+    public static FpsEstimate Estimate(HardwareInfo hw, bool presetApplied, bool cachesCleaned,
+        long freedBytes = 0, bool stabilityMode = false)
     {
         int baseline = hw.Tier switch
         {
@@ -28,6 +29,11 @@ public static class FpsEstimator
         double factor = 1.0;
         if (presetApplied)
             factor += hw.Tier switch { PcTier.Low => 0.45, PcTier.Medium => 0.22, _ => 0.08 };
+
+        // The stability profile buys even frame times by giving up peak average, so the headline
+        // number it earns is smaller. Reporting the Low figure here would be flattering and wrong.
+        if (presetApplied && stabilityMode)
+            factor -= hw.Tier switch { PcTier.Low => 0.16, PcTier.Medium => 0.08, _ => 0.03 };
 
         // Clearing caches mostly buys smoothness and load times, not average FPS. Kept small on purpose.
         if (cachesCleaned)

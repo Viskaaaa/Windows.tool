@@ -92,7 +92,8 @@ public partial class DashboardView : UserControl
     {
         if (AppState.Hardware is not { } hw) return;
 
-        var est = FpsEstimator.Estimate(hw, AppState.PresetApplied, AppState.CachesCleaned, AppState.FreedBytes);
+        var est = FpsEstimator.Estimate(hw, AppState.PresetApplied, AppState.CachesCleaned,
+            AppState.FreedBytes, AppState.StabilityMode);
         var applied = AppState.PresetApplied || AppState.CachesCleaned;
         var shown = applied ? est.After : est.Before;
 
@@ -103,7 +104,9 @@ public partial class DashboardView : UserControl
 
         GainText.Text = applied ? $"+{est.PercentGain}%" : "baseline";
         FpsNote.Text = applied
-            ? "Estimated, not measured. Real gains depend on the server population and what else is running."
+            ? AppState.StabilityMode
+                ? "Stability profile: a lower average than the Low preset, held far more consistently. Smoothness does not show up in this number."
+                : "Estimated, not measured. Real gains depend on the server population and what else is running."
             : "Apply a preset in Game optimizer to see the projected figure.";
 
         var fraction = Math.Clamp(shown / GaugeMax, 0, 1);

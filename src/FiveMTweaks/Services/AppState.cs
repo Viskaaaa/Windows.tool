@@ -10,6 +10,9 @@ public static class AppState
     public static HardwareInfo? Hardware { get; set; }
     public static bool PresetApplied { get; set; }
     public static bool CachesCleaned { get; set; }
+
+    /// <summary>True when the applied preset targets frame-time consistency over peak FPS.</summary>
+    public static bool StabilityMode { get; set; }
     public static long FreedBytes { get; set; }
 
     /// <summary>Most recent scan, so switching tabs does not force a rescan.</summary>
